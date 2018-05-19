@@ -1,14 +1,25 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const uuid = require('uuid');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const flash = require('express-flash');
+const session = require('express-session');
+const passport = require('passport');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+const index = require('./routes/index');
+const users = require('./routes/users');
 
 var app = express();
+
+var orm = require('./model');
+// orm.setup('performancedb', 'psvs', '4503', {
+//   host: '127.0.0.1',
+//   logging: false,
+//   native: false
+// });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +32,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../build')));
+
+app.use(session({
+  secret: 'vivo-dev',
+  saveUninitialized: false,
+  resave: false,
+  cookie: { maxAge: 900000 }
+ }))
+app.use(passport.initialize())
+app.use(passport.session())
+require('./auth')
 
 app.use('/', index);
 app.use('/users', users);

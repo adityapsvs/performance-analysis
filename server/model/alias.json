@@ -1,0 +1,42 @@
+{
+    "public.attendance": {
+        "belongsTo": {
+            "emp": null,
+            "instatus": null,
+            "outstatus": null
+        }
+    },
+    "public.employees": {
+        "belongsToMany": {
+            "attendanceEmpIdFkeyInstatuses": null,
+            "attendanceEmpIdFkeyOutstatuses": null
+        },
+        "hasMany": {
+            "attendanceEmpIdFkeys": null,
+            "performanceEmpIdFkeys": null
+        }
+    },
+    "public.instatuslookup": {
+        "belongsToMany": {
+            "attendanceInstatusIdFkeyEmps": null,
+            "attendanceInstatusIdFkeyOutstatuses": null
+        },
+        "hasMany": {
+            "attendanceInstatusIdFkeys": null
+        }
+    },
+    "public.outstatuslookup": {
+        "belongsToMany": {
+            "attendanceOutstatusIdFkeyEmps": null,
+            "attendanceOutstatusIdFkeyInstatuses": null
+        },
+        "hasMany": {
+            "attendanceOutstatusIdFkeys": null
+        }
+    },
+    "public.performance": {
+        "belongsTo": {
+            "emp": null
+        }
+    }
+}

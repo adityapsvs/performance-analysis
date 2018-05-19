@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1= title
+  p Please enter login information
+  div.loginbox
+    form(name="login", action="/users/login", method="post")
+      label(for="empId") Employee Id
+      input(type="text", name="empId")
+      label(for="DOJ") Date of Joining
+      input(type="text", name="DOJ")
+      input(type="submit", value="login")
