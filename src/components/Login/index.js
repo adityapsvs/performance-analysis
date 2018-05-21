@@ -33,7 +33,7 @@ export default class Login extends Component {
             <Grid.Column mobile={10} tablet={8} computer={6}>
               <Form onSubmit={ e => this.handleSubmit(e) } inverted>
                 <Form.Input name='empId' icon='user' value={this.state.empId} onChange={this.handleChange} iconPosition='left' fluid label='Employee Id' placeholder='Please enter your employee Id' />
-                <Form.Input name='password' icon='lock' value={this.state.password} onChange={this.handleChange} iconPosition='left' fluid label='Password' placeholder='Please enter your password' />
+                <Form.Input name='password' icon='lock' value={this.state.password} onChange={this.handleChange} iconPosition='left' fluid label='Password' type='password' placeholder='Please enter your password' />
                 <Button type='submit' floated='right' inverted fluid color='blue'>Log In</Button>
               </Form>
             </Grid.Column>

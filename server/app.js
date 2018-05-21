@@ -14,6 +14,8 @@ const users = require('./routes/users');
 
 var app = express();
 
+const db = require('./db');
+
 // var orm = require('./model');
 // orm.setup('performancedb', 'psvs', '4503', {
 //   host: '127.0.0.1',

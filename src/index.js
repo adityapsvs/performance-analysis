@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import registerServiceWorker from './registerServiceWorker';
 import Login from './components/Login';
 import 'semantic-ui-css/semantic.min.css';
+import { BrowserRouter } from 'react-router-dom';
 
-ReactDOM.render(<Login />, document.getElementById('root'));
-registerServiceWorker();
+ReactDOM.render(
+  <BrowserRouter>
+    <Login />
+  </BrowserRouter>, document.getElementById('root'));
