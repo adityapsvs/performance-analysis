@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
-import { Form, Button } from 'semantic-ui-react';
-import { Redirect } from 'react-router-dom';
-import axios from 'axios';
-import logo from './logo.svg';
-import './App.css';
+import { Container } from 'semantic-ui-react';
+import Routes from './Routes';
+import Login from './components/Login';
 
 class App extends Component {
+
+  constructor() {
+    super();
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+      <Container fluid style={{margin:0, padding:0}}>
+        <Routes>
+          <Login />
+        </Routes>
+      </Container>
     );
   }
 }

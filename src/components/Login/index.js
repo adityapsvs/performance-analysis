@@ -5,10 +5,11 @@ import axios from 'axios';
 
 export default class Login extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       empId: '',
-      password: ''
+      password: '',
+      redirect: false
     }
   }
 
@@ -17,29 +18,64 @@ export default class Login extends Component {
   }
 
   handleSubmit = event => {
-    event.preventDefault()
-    axios
-      .post('/login', { empId: this.state.empId, password: this.state.password })
-      .then(res => {
-        console.log(res)
-      })
+    event.preventDefault();
+    this.setState({ redirect: true });
+
+    // fetch('/login', {
+    //   body: JSON.stringify({ empId: this.state.empId, password: this.state.password }),
+    //   headers: {
+    //     'user-agent': 'Mozilla/4.0 MDN Example',
+    //     'content-type': 'application/json'
+    //   },
+    //   method: 'POST'
+    // })
+    //   .then(res => {
+    //     console.log(res);
+    //   })
+    //   .catch(err => {
+    //     console.log(err.response);
+    //   })
+    // axios({
+    //   method: 'POST',
+    //   url: '/login',
+    //   data: { empId: this.state.empId, password: this.state.password }
+    // })
+    //   .then(res => {
+    //     console.log(res)
+    //   })
+    //   .catch(err => {
+    //     console.log(err.response);
+    //   })
+    // axios
+    //   .post('/login', { empId: this.state.empId, password: this.state.password })
+    //   .then(res => {
+    //     console.log(res)
+    //   })
+    //   .catch(err => {
+    //     console.log(err.response);
+    //   })
   }
 
   render() {
-    return (
-      <Container fluid>
-        <Grid centered>
-          <Grid.Row>
-            <Grid.Column mobile={10} tablet={8} computer={6}>
-              <Form onSubmit={ e => this.handleSubmit(e) } inverted>
-                <Form.Input name='empId' icon='user' value={this.state.empId} onChange={this.handleChange} iconPosition='left' fluid label='Employee Id' placeholder='Please enter your employee Id' />
-                <Form.Input name='password' icon='lock' value={this.state.password} onChange={this.handleChange} iconPosition='left' fluid label='Password' type='password' placeholder='Please enter your password' />
-                <Button type='submit' floated='right' inverted fluid color='blue'>Log In</Button>
-              </Form>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Container>
-    )
+    const redirect = this.state.redirect;
+    if(redirect) {
+      return <Redirect to='/dash-board' />;
+    } else {
+      return (
+        <Container fluid>
+          <Grid centered>
+            <Grid.Row>
+              <Grid.Column mobile={10} tablet={8} computer={6}>
+                <Form onSubmit={ e => this.handleSubmit(e) } inverted>
+                  <Form.Input name='empId' icon='user' value={this.state.empId} onChange={this.handleChange} iconPosition='left' fluid label='Employee Id' placeholder='Please enter your employee Id' />
+                  <Form.Input name='password' icon='lock' value={this.state.password} onChange={this.handleChange} iconPosition='left' fluid label='Password' type='password' placeholder='Please enter your password' />
+                  <Button type='submit' floated='right' inverted fluid color='blue'>Log In</Button>
+                </Form>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Container>
+      );
+    }
   }
 }

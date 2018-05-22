@@ -18,7 +18,7 @@ passport.deserializeUser(function(id, done) {
 passport.use(new LocalStrategy(function(empId, password, done) {
   console.log('LocalStrategy');
   console.log(empId, password);
-  db.one('select * from Users where empId = $1', empId)
+  db.one('select * from employees where empId = $1', empId)
     .then((results) => {
       console.log('results', results);
     })
