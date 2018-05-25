@@ -60,7 +60,7 @@
     "react-router-dom": "^4.2.2",
     "recharts": "^1.0.0-beta.10",
     "resolve": "1.6.0",
-    "semantic-ui-css": "^2.3.1",
+    "semantic-ui-css": "^2.2.14",
     "semantic-ui-react": "^0.80.0",
     "sequelize": "^4.37.7",
     "sequelize-cli": "^4.0.0",
