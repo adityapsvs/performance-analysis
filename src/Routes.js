@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import Admin from './components/Admin';
 
 export default class Routes extends Component {
 
@@ -14,6 +15,7 @@ export default class Routes extends Component {
       <Switch>
         <Route exact path='/' component={Login} />
         <Route exact path='/dash-board' component={Dashboard} />
+        <Route eact path='/admin' component={Admin} />
       </Switch>
     )
   }
