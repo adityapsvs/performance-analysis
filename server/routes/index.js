@@ -5,10 +5,30 @@ const passport = require('passport');
 const db = require('../db');
 
 /* GET home page. */
-router.post('/login', passport.authenticate('local'), (req, res) => {
-  console.log(req);
-  // res.json({ lul: 'okay' });
-  res.send('logged in');
+router.post('/login', (req, res) => {
+  console.log(req.body);
+  var redirect;
+  if(req.body.empId == 'admin') {
+    db.one('SELECT * FROM employees WHERE emp_id=$1 AND password=$2', [1000, req.body.password])
+      .then(data => {
+        redirect = 1;
+        res.json({ redirect });
+      })
+      .catch(err => {
+        redirect = 0;
+        res.json({ redirect });
+      });
+  } else {
+    db.one('SELECT * FROM employees WHERE emp_id=$1 AND password=$2', [req.body.empId, req.body.password])
+      .then(data => {
+        redirect = 2;
+        res.json({ redirect });
+      })
+      .catch(err => {
+        redirect = 0;
+        res.json({ redirect });
+      });
+  }
 })
 
 router.post('/api/mark', (req, res) => {

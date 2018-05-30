@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { Button, Container, Divider, Grid, Header, Icon, Image, Modal, Segment } from 'semantic-ui-react';
-import Graphs from '../Graphs'
+import { Button, Container, Dimmer, Divider, Grid, Header, Icon, Image, Loader, Modal, Segment } from 'semantic-ui-react';
+import Graphs from '../Graphs';
+import Employee from './Employee'
+import Attendance from './Attendance';
 import Demo from '../../demo.png';
+import axios from 'axios';
+import moment from 'moment';
 
 export default class Dashboard extends Component {
 
@@ -9,25 +13,34 @@ export default class Dashboard extends Component {
     super();
     this.state ={
       loader: true,
-      confirm: false
+      confirm: false,
+      empId: '',
+      empName: '',
+      doj: '',
+      analytics: '',
+      picSrc: ''
     }
   }
 
-  confirmExit = (e) => {
-    // e.preventDefault();
-    this.setState({ confirm: true });
-    // console.log(this.state.confirm);
-  }
+  componentDidMount() {
+    axios.get('/dashboard/details', { params: { empId: 1001 } })
+      .then(res => {
+        console.log(res.data.details);
+        var picSrc = res.data.details.emp_id+'.jpg';
+        this.setState({ empId: res.data.details.emp_id, empName: res.data.details.fullname, doj: moment(res.data.details.doj).format('DD-MM-YYYY'), picSrc: picSrc })
+      });
 
-  closeModal = () => {
-    this.setState({ confirm: false });
-  }
-
-  confirmedExit = (e) => {
-    this.closeModal();
   }
 
   render() {
+    const empId = this.state.empId;
+    var attendanceTag;
+    if(empId) {
+      attendanceTag = <Attendance empId={empId} />
+    } else {
+      attendanceTag = <Dimmer active={this.state.loader}><Loader>Loading</Loader></Dimmer>;
+    }
+    console.log(this.state.picSrc);
     return(
       <Container>
         <Segment>
@@ -35,39 +48,21 @@ export default class Dashboard extends Component {
             <Grid.Row>
               <Grid.Column>
                 <div align='center'>
-                  <Image src={ Demo } circular size='small'/>
-                  <p>1001</p>
-                  <p>Aditya PSVS</p>
-                  <p>25-08-2018</p>
+                  <Image src={ this.state.picSrc } circular size='small'/>
+                  <p>{ this.state.empId }</p>
+                  <p>{ this.state.empName }</p>
+                  <p>{ this.state.doj }</p>
                 </div>
                 <Divider horizontal hidden />
-                <Button inverted fluid size='medium' color='green'>Mark Entry</Button>
-                <Divider horizontal hidden />
-                <Button inverted fluid size='medium' color='red' onClick={this.confirmExit}>Mark Exit</Button>
+                { attendanceTag }
               </Grid.Column>
               <Grid.Column>
-                <div align='center'>
-                  <Image src={ Demo } circular size='medium'/>
-                  <p>Employee of the month</p>
-                </div>
+                <Employee />
               </Grid.Column>
-              <Modal open={this.state.confirm} onClose={this.closeModal} basic size='small'>
-                <Header icon='hand peace outline' content='Are you sure you want mark your exit?' />
-                <Modal.Content>
-                  <p>Please confirm if you want to mark your exit.</p>
-                </Modal.Content>
-                <Modal.Actions>
-                  <Button color='red' inverted onClick={this.confirmedExit}>
-                    <Icon name='remove' /> No
-                  </Button>
-                  <Button color='green' inverted onClick={this.confirmedExit}>
-                    <Icon name='checkmark' /> Yes
-                  </Button>
-                </Modal.Actions>
-              </Modal>
             </Grid.Row>
           </Grid>
         </Segment>
+        <Divider horizontal hidden />
         <Graphs />
       </Container>
     );

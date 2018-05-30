@@ -4,6 +4,7 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import MultipleDatePicker from 'react-multiple-datepicker';
+import axios from 'axios';
 
 export default class Settings extends Component {
 
@@ -15,6 +16,13 @@ export default class Settings extends Component {
       endTime: moment('08:00 PM', 'hh:mm a'),
       employeeOfTheMonth: ''
     }
+  }
+
+  componentDidMount() {
+    axios.get('/admin/employees')
+      .then(res => {
+        console.log(res);
+      })
   }
 
   handleChange = event => {

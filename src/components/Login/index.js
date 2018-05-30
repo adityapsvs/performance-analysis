@@ -20,40 +20,13 @@ export default class Login extends Component {
   handleSubmit = event => {
     event.preventDefault();
     this.setState({ redirect: 'dash-board' });
-
-    // fetch('/login', {
-    //   body: JSON.stringify({ empId: this.state.empId, password: this.state.password }),
-    //   headers: {
-    //     'user-agent': 'Mozilla/4.0 MDN Example',
-    //     'content-type': 'application/json'
-    //   },
-    //   method: 'POST'
-    // })
-    //   .then(res => {
-    //     console.log(res);
-    //   })
-    //   .catch(err => {
-    //     console.log(err.response);
-    //   })
-    // axios({
-    //   method: 'POST',
-    //   url: '/login',
-    //   data: { empId: this.state.empId, password: this.state.password }
-    // })
-    //   .then(res => {
-    //     console.log(res)
-    //   })
-    //   .catch(err => {
-    //     console.log(err.response);
-    //   })
-    // axios
-    //   .post('/login', { empId: this.state.empId, password: this.state.password })
-    //   .then(res => {
-    //     console.log(res)
-    //   })
-    //   .catch(err => {
-    //     console.log(err.response);
-    //   })
+    axios
+      .post('/login', { empId: this.state.empId, password: this.state.password })
+      .then(res => {
+        console.log(res.data.redirect);
+        if(res.data.redirect == 1) { this.setState({ redirect: 'admin' }); }
+        else if(res.data.redirect == 2) { this.setState({ redirect: 'user' }); }
+      });
   }
 
   routeAdmin = event => {
@@ -64,7 +37,7 @@ export default class Login extends Component {
   render() {
     const redirect = this.state.redirect;
     console.log(this.state.redirect);
-    if(redirect === 'dash-board') {
+    if(redirect === 'user') {
       return ( <Redirect to='/dash-board' /> );
     } else if(redirect === 'admin') {
       return ( <Redirect to='/admin'/> );

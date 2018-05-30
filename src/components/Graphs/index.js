@@ -1,56 +1,75 @@
 import React, { Component } from 'react';
-import { Grid } from 'semantic-ui-react';
+import { Grid, Divider } from 'semantic-ui-react';
 import { PieChart, Pie, Tooltip } from 'recharts';
-
-const data02 = [{name: 'Group A', value: 2400}, {name: 'Group B', value: 4567},
-                {name: 'Group C', value: 1398}, {name: 'Group D', value: 9800},
-                {name: 'Group E', value: 3908}, {name: 'Group F', value: 4800}];
+import axios from 'axios';
+import Punctuality from './Punctuality';
+import Effort from './Effort';
+import TimeWastage from './TimeWastage';
+import Efficiency from './Efficiency';
+import Seriousness from './Seriousness';
 
 export default class Graphs extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      improvement: '',
+      punctuality: [],
+      effort: [],
+      timeWastage: [],
+      efficiency: [],
+      seriousness: []
+    }
+  }
+
+  componentDidMount() {
+    axios.get('/dashboard/analytics', { params: { empId: 1001 } })
+      .then(res => {
+        // console.log(res);
+        this.setState({ average: res.data.improvement, punctuality: res.data.punctuality, effort: res.data.effort, timeWastage: res.data.timeWastage, efficiency: res.data.efficiency, seriousness: res.data.seriousness });
+      });
+  }
+
   render() {
+    const improvement = this.state.improvement;
+    var performanceMessage;
+    if( improvement == 0 ) {
+      performanceMessage = <p>Based on your track record, your work seems to be <b>à la perfection!</b></p>;
+    }
+    else {
+      performanceMessage = <p>Based on your track record, you should maintain an average of <b>{improvement}.</b></p>;
+    }
     return(
-      <Grid columns={3}>
-        <Grid.Row>
-          <Grid.Column>
-            <p align='center'>Punctuality</p>
-            <PieChart width={350} height={200}>
-              <Pie data={data02} cx={200} cy={100} innerRadius={40} outerRadius={80} fill="#462171"/>
-              <Tooltip />
-            </PieChart>
-          </Grid.Column>
-          <Grid.Column>
-            <p align='center'>Effort</p>
-            <PieChart width={350} height={200}>
-              <Pie data={data02} cx={200} cy={100} innerRadius={40} outerRadius={80} fill="#814175"/>
-              <Tooltip />
-            </PieChart>
-          </Grid.Column>
-          <Grid.Column>
-            <p align='center'>Time Wastage</p>
-            <PieChart width={350} height={200}>
-              <Pie data={data02} cx={200} cy={100} innerRadius={40} outerRadius={80} fill="#D46C77"/>
-              <Tooltip />
-            </PieChart>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column>
-            <p align='center'>Efficiency</p>
-            <PieChart width={350} height={200}>
-              <Pie data={data02} cx={200} cy={100} innerRadius={40} outerRadius={80} fill="#E78876"/>
-              <Tooltip />
-            </PieChart>
-          </Grid.Column>
-          <Grid.Column>
-            <p align='center'>Seriousness</p>
-            <PieChart width={350} height={200}>
-              <Pie data={data02} cx={200} cy={100} innerRadius={40} outerRadius={80} fill="#FDAB79"/>
-              <Tooltip />
-            </PieChart>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <div align='center'>
+        {performanceMessage}
+        <Divider horizontal hidden/>
+        <Grid columns={3}>
+          <Grid.Row>
+            <Grid.Column>
+              <p align='center'>Punctuality</p>
+              <Punctuality data={this.state.punctuality}/>
+            </Grid.Column>
+            <Grid.Column>
+              <p align='center'>Effort</p>
+              <Effort data={this.state.effort} />
+            </Grid.Column>
+            <Grid.Column>
+              <p align='center'>Time Wastage</p>
+              <TimeWastage data={this.state.timeWastage} />
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column>
+              <p align='center'>Efficiency</p>
+              <Efficiency data={this.state.efficiency} />
+            </Grid.Column>
+            <Grid.Column>
+              <p align='center'>Seriousness</p>
+              <Seriousness data={this.state.seriousness} />
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </div>
     );
   }
 }
