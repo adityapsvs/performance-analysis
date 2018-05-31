@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 
 const db = require('../db');
 
@@ -78,16 +79,92 @@ router.post('/mark-entry', (req, res) => {
   db.one('SELECT starttime FROM generallookup')
     .then(data => {
       var received = data.starttime;
-      var today = new Date()
-      var day = today.getUTCDate()
-        , month = today.getUTCMonth()+1
-        , year = today.getUTCFullYear()
-        , hours = Number(received.split(':')[0])
-        , minutes = Number(received.split(':')[1])
-        , seconds = Number(received.split(':')[2])
-      console.log(day, month, year, hours, minutes, seconds);
-    })
-  // db.one('INSERT INTO attendance')
+      var receivedHours = Number(received.split(':')[0]), receivedMin = Number(received.split(':')[1]), receivedSec = Number(received.split(':')[2]);
+
+      var today = String(new Date());
+      var currentHours = Number(today.split(' ')[4].split(':')[0]), currentMin = Number(today.split(' ')[4].split(':')[1]), currentSec = Number(today.split(' ')[4].split(':')[2]);
+
+      var hourDiff = currentHours - receivedHours, minDiff = currentMin - receivedMin, secDiff = currentSec - receivedSec;
+
+      var totalDiff = hourDiff*60*60+minDiff*60+secDiff;
+
+      var message;
+
+      if(totalDiff <= 0) {
+        db.any('INSERT INTO attendance(emp_id, date, instatus_id) VALUES($1, current_date, 1)', [req.body.empId])
+          .then(data => {
+            message = 1;
+            res.json({ message });
+          })
+          .catch(err => {
+            res.json({ err });
+          })
+      } else if(totalDiff > 0 && totalDiff <= 7200 ) {
+        db.any('INSERT INTO attendance(emp_id, date, instatus_id) VALUES($1, current_date, 2)', [req.body.empId])
+          .then(data => {
+            message = 1;
+            res.json({ message });
+          })
+          .catch(err => {
+            res.json({ err });
+          })
+      } else if(totalDiff > 7200) {
+        db.any('INSERT INTO attendance(emp_id, date, instatus_id) VALUES($1, current_date, 3)', [req.body.empId])
+          .then(data => {
+            message = 1;
+            res.json({ message });
+          })
+          .catch(err => {
+            res.json({ err });
+          })
+      }
+    });
+})
+
+router.post('/mark-exit', (req, res) => {
+  db.one('SELECT endtime FROM generallookup')
+    .then(data => {
+      var received = data.endtime;
+      var receivedHours = Number(received.split(':')[0]), receivedMin = Number(received.split(':')[1]), receivedSec = Number(received.split(':')[2]);
+
+      var today = String(new Date());
+      var currentHours = Number(today.split(' ')[4].split(':')[0]), currentMin = Number(today.split(' ')[4].split(':')[1]), currentSec = Number(today.split(' ')[4].split(':')[2]);
+
+      var hourDiff = currentHours - receivedHours, minDiff = currentMin - receivedMin, secDiff = currentSec - receivedSec;
+
+      var totalDiff = hourDiff*60*60+minDiff*60+secDiff;
+
+      var message;
+
+      if(totalDiff >= 0) {
+        db.any('UPDATE attendance SET outstatus_id=3 WHERE emp_id=$1 AND date=current_date', [req.body.empId])
+          .then(data => {
+            message = 1;
+            res.json({ message });
+          })
+          .catch(err => {
+            res.json({ err });
+          })
+      } else if(totalDiff < 0 && totalDiff >= -7200 ) {
+        db.any('UPDATE attendance SET outstatus_id=2 WHERE emp_id=$1 AND date=current_date', [req.body.empId])
+          .then(data => {
+            message = 1;
+            res.json({ message });
+          })
+          .catch(err => {
+            res.json({ err });
+          })
+      } else if(totalDiff < -7200) {
+        db.any('UPDATE attendance SET outstatus_id=1 WHERE emp_id=$1 AND date=current_date', [req.body.empId])
+          .then(data => {
+            message = 1;
+            res.json({ message });
+          })
+          .catch(err => {
+            res.json({ err });
+          })
+      }
+    });
 })
 
 module.exports = router;

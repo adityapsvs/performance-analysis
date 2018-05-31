@@ -24,7 +24,23 @@ export default class Attendance extends Component {
     let empId = this.props.empId
     axios.post('/dashboard/mark-entry', { empId })
       .then(res => {
-        console.log(res);
+        if(res.data.message) {
+          this.setState({ enableEntry: 0 });
+        } else if(res.data.err) {
+          this.setState({ enableEntry: 1 });
+        }
+      })
+  }
+
+  markExit = (e) => {
+    let empId = this.props.empId;
+    axios.post('/dashboard/mark-exit', { empId })
+      .then(res => {
+        if(res.data.message) {
+          this.setState({ enableExit: 0, openConfirm: false });
+        } else if(res.data.err) {
+          this.setState({ enableExit: 1, openConfirm: false });
+        }
       })
   }
 
@@ -43,9 +59,9 @@ export default class Attendance extends Component {
   render() {
     return(
       <div>
-        <Button inverted fluid size='medium' color='green' onClick={this.markEntry}>Mark Entry</Button>
+        <Button disabled={!(this.state.enableEntry)} inverted fluid size='medium' color='green' onClick={this.markEntry}>Mark Entry</Button>
         <Divider horizontal hidden />
-        <Button inverted fluid size='medium' color='red' onClick={this.confirmExit}>Mark Exit</Button>
+        <Button disabled={!(this.state.enableExit)} inverted fluid size='medium' color='red' onClick={this.confirmExit}>Mark Exit</Button>
         <Modal open={this.state.openConfirm} onClose={this.closeModal} basic size='small'>
           <Header icon='hand peace' content='Are you sure you want mark your exit?' />
           <Modal.Content>
@@ -55,7 +71,7 @@ export default class Attendance extends Component {
             <Button color='red' inverted onClick={this.confirmedExit}>
               <Icon name='remove' /> No
             </Button>
-            <Button color='green' inverted onClick={this.confirmedExit}>
+            <Button color='green' inverted onClick={this.markExit}>
               <Icon name='checkmark' /> Yes
             </Button>
           </Modal.Actions>

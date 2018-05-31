@@ -1,101 +1,69 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
-import { Container, Divider, Icon, Image, Menu, Sidebar, Responsive, Button } from "semantic-ui-react";
+import { Container, Divider, Grid, Icon, Image, Menu, Sidebar, Responsive, Button } from "semantic-ui-react";
 import AddEmployee from './AddEmployee';
 import ChangeAttendance from './ChangeAttendance';
 import Settings from './Settings';
+import RatePerformance from './RatePerformance';
 
-const NavBarMobile = ({ object, onPusherClick, onToggle, visible }) => (
-  <Sidebar.Pushable>
-    <Sidebar
-      as={Menu}
-      animation="scale down"
-      vertical
-      visible={visible}
-    >
-      <Menu.Item onClick={ object.renderAdmin } name='addEmployee'>
-        <Icon name='add user' />
-        Add Employee
-      </Menu.Item>
-      <Menu.Item onClick={ object.renderAdmin } name='settings'>
-        <Icon name='settings' />
-        General settings
-      </Menu.Item>
-      <Menu.Item onClick={ object.renderAdmin } name='changeAttendance'>
-        <Icon name='alarm' />
-        Change Attendance
-      </Menu.Item>
-    </Sidebar>
-    <Sidebar.Pusher
-      dimmed={visible}
-      onClick={onPusherClick}
-      style={{ minHeight: "100vh" }}
-    >
-      <Divider horizontal hidden />
-      <Container>
-        <Button onClick={onToggle} size='huge'>
-          <div align='center'>
-            <Icon name="setting" />
-          </div>
-        </Button>
-        <div id='admin' align='center'>
-          <h1>Welcome to the Admin Panel</h1>
-        </div>
-      </Container>
-    </Sidebar.Pusher>
-  </Sidebar.Pushable>
-);
+export default class Admin extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      component: 'addEmployee'
+    };
+  }
 
-export default class NavBar extends Component {
-  state = {
-    visible: false
-  };
-
-  handlePusher = () => {
-    const { visible } = this.state;
-
-    if (visible) this.setState({ visible: false });
-  };
-
-  handleToggle = () => this.setState({ visible: !this.state.visible });
-
-  renderAdmin = ( event, { name } ) => {
-    event.preventDefault();
-    this.setState({ visible: false });
-    switch (name) {
+  renderComponent(name) {
+    console.log(name);
+    switch(name) {
       case 'addEmployee':
-        render(<AddEmployee />, document.getElementById('admin'));
+        return <AddEmployee />;
         break;
-      case 'settings':
-        render(<Settings />, document.getElementById('admin'));
+      case 'generalSettings':
+        return <Settings />;
         break;
       case 'changeAttendance':
-        render(<ChangeAttendance />, document.getElementById('admin'));
+        return <ChangeAttendance />;
+        break;
+      case 'ratePerformance':
+        return <RatePerformance />;
+        break;
+      default:
+        return <AddEmployee />;
     }
   }
 
-  render() {
-    const { visible } = this.state;
+  changeComponent = event => {
+    console.log(event.target.name);
+    this.setState({ component: event.target.name });
+  }
 
+  render() {
+    var AdminComponent = this.renderComponent(this.state.component);
     return (
-      <div>
-        <Responsive {...Responsive.onlyMobile}>
-          <NavBarMobile
-            object={this}
-            onPusherClick={this.handlePusher}
-            onToggle={this.handleToggle}
-            visible={visible}
-          />
-        </Responsive>
-        <Responsive minWidth={Responsive.onlyTablet.minWidth}>
-          <NavBarMobile
-            object={this}
-            onPusherClick={this.handlePusher}
-            onToggle={this.handleToggle}
-            visible={visible}
-          />
-        </Responsive>
-      </div>
+      <Container fluid>
+        <Grid columns={4}>
+          <Divider horizontal hidden />
+          <Grid.Row>
+            <Grid.Column>
+              <Button onClick={this.changeComponent} name='addEmployee' size='medium' inverted fluid color='green'>Add Employee</Button>
+            </Grid.Column>
+            <Grid.Column>
+              <Button onClick={this.changeComponent} name='generalSettings' size='medium' inverted fluid color='red'>General Settings</Button>
+            </Grid.Column>
+            <Grid.Column>
+              <Button onClick={this.changeComponent} name='changeAttendance' size='medium' inverted fluid color='blue'>Change Attendance</Button>
+            </Grid.Column>
+            <Grid.Column>
+              <Button onClick={this.changeComponent} name='ratePerformance' size='medium' inverted fluid color='orange'>Rate performance</Button>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            { AdminComponent }
+          </Grid.Row>
+        </Grid>
+      </Container>
     );
   }
 }

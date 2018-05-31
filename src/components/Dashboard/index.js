@@ -9,25 +9,23 @@ import moment from 'moment';
 
 export default class Dashboard extends Component {
 
-  constructor() {
-    super();
-    this.state ={
+  constructor(props) {
+    super(props);
+    this.state = {
       loader: true,
       confirm: false,
-      empId: '',
+      empId: this.props.location.state.empId,
       empName: '',
       doj: '',
       analytics: '',
-      picSrc: ''
+      picSrc: this.props.location.state.empId+'.jpg'
     }
   }
 
   componentDidMount() {
-    axios.get('/dashboard/details', { params: { empId: 1001 } })
+    axios.get('/dashboard/details', { params: { empId: this.state.empId } })
       .then(res => {
-        console.log(res.data.details);
-        var picSrc = res.data.details.emp_id+'.jpg';
-        this.setState({ empId: res.data.details.emp_id, empName: res.data.details.fullname, doj: moment(res.data.details.doj).format('DD-MM-YYYY'), picSrc: picSrc })
+        this.setState({ empId: res.data.details.emp_id, empName: res.data.details.fullname, doj: moment(res.data.details.doj).format('DD-MM-YYYY')})
       });
 
   }
@@ -36,11 +34,10 @@ export default class Dashboard extends Component {
     const empId = this.state.empId;
     var attendanceTag;
     if(empId) {
-      attendanceTag = <Attendance empId={empId} />
+      attendanceTag = <Attendance empId={empId} />;
     } else {
       attendanceTag = <Dimmer active={this.state.loader}><Loader>Loading</Loader></Dimmer>;
     }
-    console.log(this.state.picSrc);
     return(
       <Container>
         <Segment>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Container, Divider, Form, Grid} from 'semantic-ui-react';
-import { Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router';
 import axios from 'axios';
 
 export default class Login extends Component {
@@ -19,11 +19,11 @@ export default class Login extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    this.setState({ redirect: 'dash-board' });
+    this.setState({ redirect: 'dashboard' });
     axios
       .post('/login', { empId: this.state.empId, password: this.state.password })
       .then(res => {
-        console.log(res.data.redirect);
+        // console.log(res.data.redirect);
         if(res.data.redirect == 1) { this.setState({ redirect: 'admin' }); }
         else if(res.data.redirect == 2) { this.setState({ redirect: 'user' }); }
       });
@@ -36,11 +36,12 @@ export default class Login extends Component {
 
   render() {
     const redirect = this.state.redirect;
-    console.log(this.state.redirect);
+    // console.log(this.state.redirect);
     if(redirect === 'user') {
-      return ( <Redirect to='/dash-board' /> );
+      // console.log(this.state.empId);
+      return ( <Redirect to={{ pathname: '/dashboard', state: { empId: this.state.empId } }} /> );
     } else if(redirect === 'admin') {
-      return ( <Redirect to='/admin'/> );
+      return ( <Redirect to={{ pathname: '/admin' }} /> );
     } else {
       return (
         <Container fluid>
