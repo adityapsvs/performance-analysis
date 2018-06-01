@@ -35,7 +35,7 @@ export default class AddEmployee extends Component {
     axios
       .post('/master/add-employee', { fullName: this.state.fullName, empId: this.state.empId, password: this.state.password, doj: date })
       .then(res => {
-        console.log(res);
+        if(res.data.message) { this.setState({ fullName: '', empId: '', password: '', doj: '' }); }
       })
       .catch(err => {
         console.log(err);

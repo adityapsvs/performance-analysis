@@ -25,8 +25,7 @@ export default class Graphs extends Component {
   componentDidMount() {
     axios.get('/dashboard/analytics', { params: { empId: 1001 } })
       .then(res => {
-        // console.log(res);
-        this.setState({ average: res.data.improvement, punctuality: res.data.punctuality, effort: res.data.effort, timeWastage: res.data.timeWastage, efficiency: res.data.efficiency, seriousness: res.data.seriousness });
+        this.setState({ improvement: res.data.improvement, punctuality: res.data.punctuality, effort: res.data.effort, timeWastage: res.data.timeWastage, efficiency: res.data.efficiency, seriousness: res.data.seriousness });
       });
   }
 
@@ -37,7 +36,7 @@ export default class Graphs extends Component {
       performanceMessage = <p>Based on your track record, your work seems to be <b>à la perfection!</b></p>;
     }
     else {
-      performanceMessage = <p>Based on your track record, you should maintain an average of <b>{improvement}.</b></p>;
+      performanceMessage = <p>Based on your track record, you should maintain an average of <b>{Math.round(improvement * 100) / 100}</b>.</p>;
     }
     return(
       <div align='center'>

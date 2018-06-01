@@ -51,12 +51,12 @@ router.get('/analytics', (req, res) => {
       var average = 0;
       for(let index in analytics) {
         let element = analytics[index];
-        punctuality.push({ punctuality: element.punctuality });
-        effort.push({ effort: element.effort });
-        timeWastage.push({ timeWastage: element.timewastage });
-        efficiency.push({ efficiency: element.efficiency });
-        seriousness.push({ seriousness: element.seriousness });
-        averageArray.push((element.punctuality+element.effort+element.efficiency+element.seriousness+element.timewastage)/5);
+        punctuality.push({punctuality: Number(element.punctuality)});
+        effort.push({effort: Number(element.effort)});
+        timeWastage.push({timeWastage: Number(element.timewastage)});
+        efficiency.push({efficiency: Number(element.efficiency)});
+        seriousness.push({seriousness: Number(element.seriousness)});
+        averageArray.push((punctuality[index].punctuality+effort[index].effort+timeWastage[index].timeWastage+efficiency[index].efficiency+seriousness[index].seriousness)/5);
       }
       averageArray.forEach(function(element) {
         average += element;
@@ -65,7 +65,7 @@ router.get('/analytics', (req, res) => {
       var improvement;
       if( average >= 7.5 ) {
         improvement = 0;
-        res.json({ improvement, punctuality, effort, timeWastage, efficiency, seriousness })
+        res.json({ improvement, punctuality, effort, timeWastage, efficiency, seriousness });
       } else {
         let now = new Date();
         let totalDays = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();

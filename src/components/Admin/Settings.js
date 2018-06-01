@@ -29,7 +29,7 @@ export default class Settings extends Component {
     var empId = Number(this.state.employeeOfTheMonth);
     axios
       .post('/master/add-eom', { empId: empId })
-      .then(res => { console.log(res); })
+      .then(res => { if(res.data.data.length == 0) { this.setState({ employeeOfTheMonth: '' }); } })
       .catch(err => { console.log(err); });
   }
 
