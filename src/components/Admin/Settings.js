@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Container, Divider, Form, Grid, Input } from 'semantic-ui-react';
+import { Button, Container, Divider, Form, Grid, Header, Icon, Input, Modal } from 'semantic-ui-react';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
@@ -10,11 +10,13 @@ export default class Settings extends Component {
 
   constructor(props) {
     super(props);
-    // let startTime = moment('11:00 AM', 'hh:mm a')
     this.state = {
       startTime: '',
       endTime: '',
-      employeeOfTheMonth: ''
+      employeeOfTheMonth: '',
+      message: '',
+      dates: [],
+      successMsg: false
     }
   }
 
@@ -25,7 +27,6 @@ export default class Settings extends Component {
   }
 
   submitEmployee = () => {
-    console.log(this.state.employeeOfTheMonth);
     var empId = Number(this.state.employeeOfTheMonth);
     axios
       .post('/master/add-eom', { empId: empId })
@@ -34,7 +35,6 @@ export default class Settings extends Component {
   }
 
   submitStartTime = () => {
-    console.log(this.state.startTime);
     var startTime = this.state.startTime;
     axios
       .post('/master/add-start', { startTime: startTime })
@@ -43,12 +43,36 @@ export default class Settings extends Component {
   }
 
   submitEndTime = () => {
-    console.log(this.state.endTime);
     var endTime = this.state.endTime;
     axios
       .post('/master/add-end', { endTime: endTime })
       .then(res => { if(res.data.data == null) { this.setState({ endTime: '' }); } })
       .catch(err => { console.log(err); });
+  }
+
+  submitMessage = () => {
+    var message = this.state.message;
+    axios
+      .post('/master/add-message', { message: message })
+      .then(res => { if(res.data.data == null) { this.setState({ message: '' }); } })
+      .catch(err => { console.log(err); });
+  }
+
+  addDates = (dates) => {
+    this.setState({ dates: dates });
+  }
+
+  submitDates = () => {
+    var dates = this.state.dates;
+    axios
+      .post('/master/add-dates', { dates: dates })
+      .then(res => {
+        if(res.data.data === null) { this.setState({ successMsg: true }); }
+       })
+  }
+
+  closeModal = () => {
+    this.setState({ successMsg: false })
   }
 
   render() {
@@ -99,7 +123,39 @@ export default class Settings extends Component {
           </Grid.Row>
           <Divider horizontal hidden />
           <Grid.Row>
+            <h3>Add message to the employees</h3>
+          </Grid.Row>
+          <Grid.Row centered>
+            <Grid.Column mobile={6} computer={6} tablet={6}>
+              <Form inverted onSubmit={this.submitMessage}>
+                <Form.Input name='message' value={this.state.message} onChange={this.handleChange} maxLength='160' fluid placeholder='Any message to the employees' />
+                <Divider horizontal hidden />
+                <Button type='submit' floated='right' inverted fluid color='red'>Add</Button>
+              </Form>
+            </Grid.Column>
+          </Grid.Row>
+          <Divider horizontal hidden />
+          <Grid.Row>
             <h3>Choose Holidays for the month</h3>
+          </Grid.Row>
+          <Grid.Row centered>
+            <Grid.Column mobile={6} computer={6} tablet={6}>
+              <Form onSubmit={this.submitDates}>
+                <Form.Input>
+                  <MultipleDatePicker onSubmit={dates => this.addDates(dates)} />
+                </Form.Input>
+                <Divider horizontal hidden />
+                <Button type='submit' floated='right' inverted fluid color='red'>Add</Button>
+              </Form>
+              <Modal open={this.state.successMsg} onClose={this.closeModal} basic size='small'>
+                <Header icon='calendar' content='Holidays Added successfully' />
+                <Modal.Actions>
+                  <Button color='green' inverted onClick={this.closeModal}>
+                    <Icon name='checkmark' /> Okay
+                  </Button>
+                </Modal.Actions>
+              </Modal>
+            </Grid.Column>
           </Grid.Row>
         </Grid>
       </Container>

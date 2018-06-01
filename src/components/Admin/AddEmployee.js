@@ -13,7 +13,8 @@ export default class AddEmployee extends Component {
       fullName: '',
       empId: '',
       password: '',
-      doj: ''
+      doj: '',
+      image: ''
     }
   }
 
@@ -33,13 +34,13 @@ export default class AddEmployee extends Component {
     var dateString = this.state.doj.split('/');
     var date = new Date(dateString[2], dateString[1]-1, dateString[0]);
     axios
-      .post('/master/add-employee', { fullName: this.state.fullName, empId: this.state.empId, password: this.state.password, doj: date })
+      .post('/master/add-employee', { fullName: this.state.fullName, empId: this.state.empId, password: this.state.password, doj: date, image: this.state.image })
       .then(res => {
-        if(res.data.message) { this.setState({ fullName: '', empId: '', password: '', doj: '' }); }
+        if(res.data.message) { this.setState({ fullName: '', empId: '', password: '', doj: '', image: '' }); }
       })
       .catch(err => {
         console.log(err);
-      })
+      });
   }
 
   render() {
@@ -56,6 +57,7 @@ export default class AddEmployee extends Component {
                 <Form.Input icon='hashtag' name='empId' value={this.state.empId} onChange={this.handleChange} iconPosition='left' fluid label='Employee ID' placeholder='Enter the employee ID' />
                 <Form.Input icon='spy' name='password' value={this.state.password} onChange={this.handleChange} iconPosition='left' fluid label='Password' placeholder='Enter the password' type='password'/>
                 <Form.Input icon='calendar' name='doj' value={this.state.doj} onChange={this.handleChange} iconPosition='left' fluid label='DOJ' placeholder='DD/MM/YYYY'/>
+                <Form.Input icon='image' name='image' value={this.state.image} onChange={this.handleChange} iconPosition='left' fluid label='Image' placeholder='Upload the host link'/>
                 <Button type='submit' floated='right' inverted fluid color='green'>Add</Button>
               </Form>
             </Grid.Column>

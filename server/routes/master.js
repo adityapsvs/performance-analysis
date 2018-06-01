@@ -6,7 +6,7 @@ const db = require('../db');
 router.post('/add-employee', (req, res) => {
   var message;
   if(req.body.empId == '') {
-    db.any('INSERT INTO employees(emp_id, fullname, doj, password) VALUES(DEFAULT, $1, $2, $3)', [req.body.fullName, req.body.doj, req.body.password])
+    db.any('INSERT INTO employees(emp_id, fullname, doj, password, image) VALUES(DEFAULT, $1, $2, $3, $4)', [req.body.fullName, req.body.doj, req.body.password, req.body.image])
       .then(data => {
         message = 1;
         res.json({ message });
@@ -15,7 +15,7 @@ router.post('/add-employee', (req, res) => {
         res.json({ err });
       });
   } else {
-    db.any('INSERT INTO employees(emp_id, fullname, doj, password) VALUES($1, $2, $3, $4)', [req.body.empId, req.body.fullName, req.body.doj, req.body.password])
+    db.any('INSERT INTO employees(emp_id, fullname, doj, password, image) VALUES($1, $2, $3, $4, $5)', [req.body.empId, req.body.fullName, req.body.doj, req.body.password, req.body.image])
       .then(data => {
         message = 1;
         res.json({ message });
@@ -38,9 +38,7 @@ router.post('/add-eom', (req, res) => {
 })
 
 router.post('/add-start', (req, res) => {
-  console.log(req.body.startTime);
   var time = req.body.startTime.split(':');
-  console.log(time);
   db.none("UPDATE generallookup SET starttime=to_timestamp('$1:$2:$3', 'HH24:MI:SS')", [Number(time[0]), Number(time[1]), Number(time[2])])
     .then(data => {
       console.log(data);
@@ -54,28 +52,57 @@ router.post('/add-start', (req, res) => {
 });
 
 router.post('/add-end', (req, res) => {
-  console.log(req.body.endTime);
   var time = req.body.endTime.split(':');
-  console.log(time);
   db.none("UPDATE generallookup SET endtime=to_timestamp('$1:$2:$3', 'HH24:MI:SS')", [Number(time[0]), Number(time[1]), Number(time[2])])
     .then(data => {
-      console.log(data);
       message = 1;
       res.json({ data });
     })
     .catch(err => {
-      console.log(err);
       res.json({ err });
     });
 });
 
-router.get('/employees', (req, res) => {
-  db.any('SELECT emp_id, fullName FROM employees')
-    .then(employees => {
-      res.json({ employees });
+router.post('/add-message', (req, res) => {
+  var message = req.body.message;
+  db.none('UPDATE generallookup SET message=$1', [message])
+    .then(data => {
+      message = 1;
+      res.json({ data });
     })
     .catch(err => {
-      console.log(err);
+      res.json({ err });
+    });
+});
+
+router.post('/add-dates', (req, res) => {
+  var dates = req.body.dates;
+  for(var index in dates) {
+    var date = new Date(dates[index]);
+    db.none('INSERT INTO holidays VALUES(DEFAULT, $1)', [date])
+      .then(data => {
+        message = 1;
+        res.json({ data });
+      })
+      .catch(err => {
+        res.json({ err });
+      });
+  }
+});
+
+router.get('/employees', (req, res) => {
+  db.any('SELECT holidaydate FROM holidays')
+    .then(dates => {
+      var enable;
+      var date = new Date();
+      for(var index in dates) {
+        if(dates[index].holidaydate.getDate() === date.getDate() && dates[index].holidaydate.getMonth() === date.getMonth() && dates[index].holidaydate.getFullYear() === date.getFullYear()) {
+          enable = 0;
+          res.json({ enable });
+        }
+      }
+      enable = 1;
+      res.json({ enable });
     });
 });
 

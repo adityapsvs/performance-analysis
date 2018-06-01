@@ -7,23 +7,23 @@ export default class Employee extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      employeeOfPreviousMonth: ''
+      employeeOfPreviousMonth: '',
+      picSrc: ''
     }
   }
 
   componentDidMount() {
     axios.get('/dashboard/employee')
       .then(res => {
-        this.setState({ employeeOfPreviousMonth: res.data.employee.employeeofpreviousmonth });
+        this.setState({ employeeOfPreviousMonth: res.data.employee.employeeofpreviousmonth, picSrc: res.data.imageURL });
       });
   }
 
   render() {
-    var picSrc = this.state.employeeOfPreviousMonth+'.jpg';
     return(
       <div align='center'>
         <p><b>Employee of the month</b></p>
-        <Image src={ picSrc } circular size='medium'/>
+        <Image src={ this.state.picSrc } circular size='medium'/>
         <p>{ this.state.employeeOfPreviousMonth }</p>
       </div>
     );

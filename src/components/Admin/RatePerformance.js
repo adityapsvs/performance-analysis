@@ -13,7 +13,8 @@ export default class RatePerformace extends Component {
       effort: '',
       seriousness: '',
       efficiency: '',
-      timeWastage: ''
+      timeWastage: '',
+      enable: true
     }
   }
 
@@ -21,8 +22,7 @@ export default class RatePerformace extends Component {
     axios
       .get('/master/employees')
       .then(res => {
-        console.log(res.data.employees);
-        // this.setState({ employees: res.data.employees });
+        if(res.data.enable === 0) { this.setState({ enable: false }); }
       })
       .catch(err => {
         console.log(err);
@@ -93,10 +93,10 @@ export default class RatePerformace extends Component {
             </Grid.Row>
             <Grid.Row centered>
               <Grid.Column mobile={6} computer={6} tablet={6}>
-                <Button onClick={this.goodReason} fluid inverted color='orange'>Reason for leave accepted</Button>
+                <Button disabled={!(this.state.enable)} onClick={this.goodReason} fluid inverted color='orange'>Reason for leave accepted</Button>
               </Grid.Column>
               <Grid.Column mobile={6} computer={6} tablet={6}>
-                <Button onClick={this.badReason} fluid inverted color='orange'>Reason for leave rejected</Button>
+                <Button disabled={!(this.state.enable)} onClick={this.badReason} fluid inverted color='orange'>Reason for leave rejected</Button>
               </Grid.Column>
             </Grid.Row>
             <Grid.Row centered>

@@ -7,9 +7,10 @@ export default class Punctuality extends Component {
     return(
       <AreaChart width={350} height={200} data={this.props.data} margin={{top: 5, right: 30, left: 20, bottom: 5}}>
        <YAxis/>
+       <XAxis dataKey="date"/>
        <CartesianGrid strokeDasharray="3 3"/>
        <Tooltip/>
-       <Area type="monotone" dataKey="punctuality" stroke="#82ca9d" fill="#462171" />
+       <Area type="monotone" dataKey="punctuality" stroke="#6830a5" fill="#462171" />
       </AreaChart>
     );
   }

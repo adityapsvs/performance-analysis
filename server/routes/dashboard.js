@@ -8,34 +8,64 @@ router.get('/details', (req, res) => {
   db.one('SELECT * FROM employees WHERE emp_id = $1', [req.query.empId])
     .then(details => {
       res.json({ details });
+    })
+    .catch(err => {
+      console.log('Error in details:', err);
     });
 });
 
 router.get('/employee', (req, res) => {
   db.one('SELECT employeeofpreviousmonth FROM generallookup', [])
     .then(employee => {
-      res.json({ employee });
+      db.one('SELECT image FROM employees WHERE emp_id=$1', [employee.employeeofpreviousmonth])
+        .then(image => {
+          var imageURL = image.image;
+          res.json({ employee, imageURL });
+        });
     });
 });
+
+router.get('/message', (req, res) => {
+  db.one('SELECT message FROM generallookup', [])
+    .then(message => {
+      console.log(message);
+      res.json({ message });
+    })
+    .catch(err => {
+      console.log(err);
+      message = 0;
+      res.json({ message });
+    })
+})
 
 router.get('/attendance', (req, res) => {
   db.any('SELECT * FROM attendance WHERE emp_id = $1 AND EXTRACT(DAY FROM date) = EXTRACT(DAY FROM current_date)', [req.query.empId])
     .then(attendance => {
-      var enableEntry
-        , enableExit;
-      if( attendance.length == 0 ) {
-        enableEntry = 1;
-        enableExit = 1;
-        res.json({ enableEntry, enableExit });
-      } else if( attendance[0]['instatus_id'] !== null && attendance[0]['outstatus_id'] == null ) {
-        enableEntry = 0;
-        enableExit = 1;
-        res.json({ enableEntry, enableExit })
-      } else if( attendance[0]['instatus_id'] !== null && attendance[0]['outstatus_id'] !== null ) {
-        enableEntry = 0;
-        enableExit = 0;
-        res.json({ enableEntry, enableExit })
-      }
+      var enableEntry, enableExit;
+      db.any('SELECT holidaydate FROM holidays')
+        .then(dates => {
+          var date = new Date();
+          for(var index in dates) {
+            if(dates[index].holidaydate.getDate() === date.getDate() && dates[index].holidaydate.getMonth() === date.getMonth() && dates[index].holidaydate.getFullYear() === date.getFullYear()) {
+              enableEntry = 0;
+              enableExit = 0;
+              res.json({ enableEntry, enableExit });
+            }
+          }
+          if( attendance.length == 0 ) {
+            enableEntry = 1;
+            enableExit = 1;
+            res.json({ enableEntry, enableExit });
+          } else if( attendance[0]['instatus_id'] !== null && attendance[0]['outstatus_id'] == null ) {
+            enableEntry = 0;
+            enableExit = 1;
+            res.json({ enableEntry, enableExit })
+          } else if( attendance[0]['instatus_id'] !== null && attendance[0]['outstatus_id'] !== null ) {
+            enableEntry = 0;
+            enableExit = 0;
+            res.json({ enableEntry, enableExit })
+          }
+        });
     })
 })
 
@@ -51,11 +81,13 @@ router.get('/analytics', (req, res) => {
       var average = 0;
       for(let index in analytics) {
         let element = analytics[index];
-        punctuality.push({punctuality: Number(element.punctuality)});
-        effort.push({effort: Number(element.effort)});
-        timeWastage.push({timeWastage: Number(element.timewastage)});
-        efficiency.push({efficiency: Number(element.efficiency)});
-        seriousness.push({seriousness: Number(element.seriousness)});
+        let rawDate = String(element.date).split(' ');
+        let date = rawDate[1]+" "+rawDate[2]+" "+rawDate[3];
+        punctuality.push({date: date, punctuality: Number(element.punctuality)});
+        effort.push({date: date, effort: Number(element.effort)});
+        timeWastage.push({date: date, timeWastage: Number(element.timewastage)});
+        efficiency.push({date: date, efficiency: Number(element.efficiency)});
+        seriousness.push({date: date, seriousness: Number(element.seriousness)});
         averageArray.push((punctuality[index].punctuality+effort[index].effort+timeWastage[index].timeWastage+efficiency[index].efficiency+seriousness[index].seriousness)/5);
       }
       averageArray.forEach(function(element) {
