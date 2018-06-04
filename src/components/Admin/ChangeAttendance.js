@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Button, Container, Divider, Form, Grid } from 'semantic-ui-react';
+import { Button, Container, Divider, Form, Grid, Header, Icon, Modal } from 'semantic-ui-react';
 
 export default class ChangeAttendance extends Component {
 
@@ -9,7 +9,8 @@ export default class ChangeAttendance extends Component {
     this.state = {
       empId: '',
       instatus: '',
-      outstatus: ''
+      outstatus: '',
+      openFailModal: false
     }
   }
 
@@ -24,11 +25,9 @@ export default class ChangeAttendance extends Component {
     axios
       .post('/master/change-entry', { empId: empId, instatus: instatus })
       .then(res => {
-        if(res.data.data.length == 0) { this.setState({ empId: '', instatus: '' }) }
+        if(res.data.data !== undefined) { this.setState({ empId: '', instatus: '' }) }
+        else if(res.data.err) { this.setState({ openFailModal: true, empId: '', instatus: '' }); }
       })
-      .catch(err => {
-        console.log(err);
-      });
   }
 
   changeExit = () => {
@@ -36,12 +35,12 @@ export default class ChangeAttendance extends Component {
     axios
       .post('/master/change-exit', { empId: empId, outstatus: outstatus })
       .then(res => {
-        if(res.data.data.length == 0) { this.setState({ empId: '', outstatus: '' }) }
+        if(res.data.data !== undefined) { this.setState({ empId: '', outstatus: '' }) }
+        else if(res.data.err) { this.setState({ openFailModal: true, empId: '', outstatus: '' }); }
       })
-      .catch(err => {
-        console.log(err);
-      });
   }
+
+  openFailModal = () => { this.setState({ openFailModal: false }); }
 
   render() {
     return(
@@ -73,6 +72,14 @@ export default class ChangeAttendance extends Component {
               </Form>
             </Grid.Column>
           </Grid.Row>
+          <Modal open={this.state.openFailModal} onClose={this.openFailModal} basic size='small'>
+            <Header icon='warning sign' content='Failed in doing that!' />
+            <Modal.Actions>
+              <Button color='red' inverted onClick={this.openFailModal}>
+                <Icon name='repeat' /> Try again
+              </Button>
+            </Modal.Actions>
+          </Modal>
         </Grid>
       </Container>
     );

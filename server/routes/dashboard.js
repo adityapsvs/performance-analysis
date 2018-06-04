@@ -70,6 +70,10 @@ router.get('/attendance', (req, res) => {
 })
 
 router.get('/analytics', (req, res) => {
+  var totalDaysToRemove;
+  db.any("SELECT COUNT(*) FROM holidays WHERE EXTRACT('MONTH' FROM holidaydate)=EXTRACT('MONTH' FROM current_date)")
+    .then(res => { totalDaysToRemove = Number(res[0].count); })
+    .catch(err => { console.log(err); })
   db.any('SELECT date, punctuality, effort, efficiency, seriousness, timewastage FROM performance WHERE emp_id = $1 AND EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM current_date)', [req.query.empId])
     .then(analytics => {
       var punctuality = []
@@ -101,6 +105,7 @@ router.get('/analytics', (req, res) => {
       } else {
         let now = new Date();
         let totalDays = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+        totalDays = totalDays - totalDaysToRemove;
         improvement = (totalDays*7.5-averageArray.length*average)/(totalDays-averageArray.length);
         res.json({ improvement, punctuality, effort, timeWastage, efficiency, seriousness });
       }

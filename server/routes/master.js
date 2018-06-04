@@ -41,12 +41,9 @@ router.post('/add-start', (req, res) => {
   var time = req.body.startTime.split(':');
   db.none("UPDATE generallookup SET starttime=to_timestamp('$1:$2:$3', 'HH24:MI:SS')", [Number(time[0]), Number(time[1]), Number(time[2])])
     .then(data => {
-      console.log(data);
-      message = 1;
       res.json({ data });
     })
     .catch(err => {
-      console.log(err);
       res.json({ err });
     });
 });
@@ -55,7 +52,6 @@ router.post('/add-end', (req, res) => {
   var time = req.body.endTime.split(':');
   db.none("UPDATE generallookup SET endtime=to_timestamp('$1:$2:$3', 'HH24:MI:SS')", [Number(time[0]), Number(time[1]), Number(time[2])])
     .then(data => {
-      message = 1;
       res.json({ data });
     })
     .catch(err => {
@@ -67,7 +63,6 @@ router.post('/add-message', (req, res) => {
   var message = req.body.message;
   db.none('UPDATE generallookup SET message=$1', [message])
     .then(data => {
-      message = 1;
       res.json({ data });
     })
     .catch(err => {
@@ -81,7 +76,6 @@ router.post('/add-dates', (req, res) => {
     var date = new Date(dates[index]);
     db.none('INSERT INTO holidays VALUES(DEFAULT, $1)', [date])
       .then(data => {
-        message = 1;
         res.json({ data });
       })
       .catch(err => {
@@ -154,7 +148,6 @@ router.post('/good-reason', (req, res) => {
       res.json({ data });
     })
     .catch(err => {
-      console.log(err);
       res.json({ err })
     });
 });
@@ -165,7 +158,6 @@ router.post('/bad-reason', (req, res) => {
       res.json({ data });
     })
     .catch(err => {
-      console.log(err);
       res.json({ err })
     });
 });

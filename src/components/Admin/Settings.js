@@ -16,7 +16,8 @@ export default class Settings extends Component {
       employeeOfTheMonth: '',
       message: '',
       dates: [],
-      successMsg: false
+      successMsg: false,
+      openFailModal: false
     }
   }
 
@@ -30,32 +31,42 @@ export default class Settings extends Component {
     var empId = Number(this.state.employeeOfTheMonth);
     axios
       .post('/master/add-eom', { empId: empId })
-      .then(res => { if(res.data.data.length == 0) { this.setState({ employeeOfTheMonth: '' }); } })
-      .catch(err => { console.log(err); });
+      .then(res => {
+        if(res.data.data !== undefined && res.data.data.length == 0) {
+          this.setState({ employeeOfTheMonth: '' });
+        }
+        else if(res.data.err) { this.setState({ openFailModal: true, employeeOfTheMonth: '' }); }
+      });
   }
 
   submitStartTime = () => {
     var startTime = this.state.startTime;
     axios
       .post('/master/add-start', { startTime: startTime })
-      .then(res => { if(res.data.data == null) { this.setState({ startTime: '' }); } })
-      .catch(err => { console.log(err); });
+      .then(res => {
+        if(res.data.data !== undefined && res.data.data == null) { this.setState({ startTime: '' }); }
+        else if(res.data.err) { this.setState({ openFailModal: true, startTime: '' }); }
+       });
   }
 
   submitEndTime = () => {
     var endTime = this.state.endTime;
     axios
       .post('/master/add-end', { endTime: endTime })
-      .then(res => { if(res.data.data == null) { this.setState({ endTime: '' }); } })
-      .catch(err => { console.log(err); });
+      .then(res => {
+        if(res.data.data !== undefined && res.data.data == null) { this.setState({ endTime: '' }); }
+        else if(res.data.err) { this.setState({ openFailModal: true, endTime: '' }); }
+       });
   }
 
   submitMessage = () => {
     var message = this.state.message;
     axios
       .post('/master/add-message', { message: message })
-      .then(res => { if(res.data.data == null) { this.setState({ message: '' }); } })
-      .catch(err => { console.log(err); });
+      .then(res => {
+        if(res.data.data !== undefined && res.data.data == null) { this.setState({ message: '' }); }
+        else if(res.data.err) { this.setState({ openFailModal: true, message: '' }); }
+      });
   }
 
   addDates = (dates) => {
@@ -67,13 +78,16 @@ export default class Settings extends Component {
     axios
       .post('/master/add-dates', { dates: dates })
       .then(res => {
-        if(res.data.data === null) { this.setState({ successMsg: true }); }
+        if(res.data.data !== undefined && res.data.data === null) { this.setState({ successMsg: true }); }
+        else if(res.data.err) { this.setState({ openFailModal: true }); }
        })
   }
 
   closeModal = () => {
     this.setState({ successMsg: false })
   }
+
+  openFailModal = () => { this.setState({ openFailModal: false }); }
 
   render() {
     return(
@@ -152,6 +166,14 @@ export default class Settings extends Component {
                 <Modal.Actions>
                   <Button color='green' inverted onClick={this.closeModal}>
                     <Icon name='checkmark' /> Okay
+                  </Button>
+                </Modal.Actions>
+              </Modal>
+              <Modal open={this.state.openFailModal} onClose={this.openFailModal} basic size='small'>
+                <Header icon='warning sign' content='Failed in doing that!' />
+                <Modal.Actions>
+                  <Button color='red' inverted onClick={this.openFailModal}>
+                    <Icon name='repeat' /> Try again
                   </Button>
                 </Modal.Actions>
               </Modal>

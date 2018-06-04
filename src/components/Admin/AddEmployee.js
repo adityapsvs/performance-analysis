@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Container, Form, Grid, Icon } from 'semantic-ui-react';
+import { Button, Container, Form, Grid, Icon, Modal, Header } from 'semantic-ui-react';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
@@ -14,7 +14,8 @@ export default class AddEmployee extends Component {
       empId: '',
       password: '',
       doj: '',
-      image: ''
+      image: '',
+      openFailModal: false
     }
   }
 
@@ -37,11 +38,11 @@ export default class AddEmployee extends Component {
       .post('/master/add-employee', { fullName: this.state.fullName, empId: this.state.empId, password: this.state.password, doj: date, image: this.state.image })
       .then(res => {
         if(res.data.message) { this.setState({ fullName: '', empId: '', password: '', doj: '', image: '' }); }
+        else if(res.data.err) { this.setState({ openFailModal: true, fullName: '', empId: '', password: '', doj: '', image: '' }); }
       })
-      .catch(err => {
-        console.log(err);
-      });
   }
+
+  openFailModal = () => { this.setState({ openFailModal: false }); }
 
   render() {
     return(
@@ -62,6 +63,14 @@ export default class AddEmployee extends Component {
               </Form>
             </Grid.Column>
           </Grid.Row>
+          <Modal open={this.state.openFailModal} onClose={this.openFailModal} basic size='small'>
+            <Header icon='warning sign' content='Failed in doing that!' />
+            <Modal.Actions>
+              <Button color='red' inverted onClick={this.openFailModal}>
+                <Icon name='repeat' /> Try again
+              </Button>
+            </Modal.Actions>
+          </Modal>
         </Grid>
       </Container>
     );

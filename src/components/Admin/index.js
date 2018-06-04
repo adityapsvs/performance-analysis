@@ -16,7 +16,6 @@ export default class Admin extends Component {
   }
 
   renderComponent(name) {
-    console.log(name);
     switch(name) {
       case 'addEmployee':
         return <AddEmployee />;

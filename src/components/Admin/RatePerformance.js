@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Container, Dimmer, Divider, Dropdown, Form, Grid, Input, Loader } from 'semantic-ui-react';
+import { Button, Container, Dimmer, Divider, Dropdown, Form, Grid, Header, Icon, Input, Loader, Modal } from 'semantic-ui-react';
 import axios from 'axios';
 
 export default class RatePerformace extends Component {
@@ -14,7 +14,8 @@ export default class RatePerformace extends Component {
       seriousness: '',
       efficiency: '',
       timeWastage: '',
-      enable: true
+      enable: true,
+      openFailModal: false
     }
   }
 
@@ -40,11 +41,9 @@ export default class RatePerformace extends Component {
     axios
       .post('/master/performance', {empId: empId, effort: effort, seriousness: seriousness, efficiency: efficiency, timeWastage: timeWastage})
       .then(res => {
-        if(res.data.data.length == 0) { this.setState({ empId: '', effort: '', seriousness: '', efficiency: '', timeWastage: '' }); }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+        if(res.data.data === undefined && res.data.data.length == 0) { this.setState({ empId: '', effort: '', seriousness: '', efficiency: '', timeWastage: '' }); }
+        else if(res.data.err) { this.setState({ openFailModal: true, empId: '', effort: '', seriousness: '', efficiency: '', timeWastage: '' }); }
+      });
   }
 
   goodReason = () => {
@@ -52,10 +51,10 @@ export default class RatePerformace extends Component {
     axios
       .post('/master/good-reason', { empId: empId })
       .then(res => {
-        if(res.data.data.length == 0) { this.setState({ empId: '' }); }
-      })
-      .catch(err => {
-        console.log(err);
+        if(res.data.data !== undefined && res.data.data.length == 0) {
+          this.setState({ empId: '' });
+        }
+        else if(res.data.err) { this.setState({ openFailModal: true, empId: '' }); }
       });
   }
 
@@ -64,12 +63,14 @@ export default class RatePerformace extends Component {
     axios
       .post('/master/bad-reason', { empId: empId })
       .then(res => {
-        if(res.data.data.length == 0) { this.setState({ empId: '' }); }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+        if(res.data.data !== undefined && res.data.data.length == 0) {
+          this.setState({ empId: '' });
+        }
+        else if(res.data.err) { this.setState({ openFailModal: true, empId: '' }); }
+      });
   }
+
+  openFailModal = () => { this.setState({ openFailModal: false }); }
 
   render() {
     var employees = this.state.employees;
@@ -112,6 +113,14 @@ export default class RatePerformace extends Component {
                 </Form>
               </Grid.Column>
             </Grid.Row>
+            <Modal open={this.state.openFailModal} onClose={this.openFailModal} basic size='small'>
+              <Header icon='warning sign' content='Failed in doing that!' />
+              <Modal.Actions>
+                <Button color='red' inverted onClick={this.openFailModal}>
+                  <Icon name='repeat' /> Try again
+                </Button>
+              </Modal.Actions>
+            </Modal>
           </Grid>
         </Container>
       );

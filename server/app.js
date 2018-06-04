@@ -40,7 +40,6 @@ app.use(session({
  }))
 app.use(passport.initialize())
 app.use(passport.session())
-require('./auth')
 
 app.use('/', index);
 app.use('/users', users);
