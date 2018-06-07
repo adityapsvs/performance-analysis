@@ -1,28 +1,34 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 
 const db = require('../db');
 
 router.post('/add-employee', (req, res) => {
   var message;
   if(req.body.empId == '') {
-    db.any('INSERT INTO employees(emp_id, fullname, doj, password, image) VALUES(DEFAULT, $1, $2, $3, $4)', [req.body.fullName, req.body.doj, req.body.password, req.body.image])
-      .then(data => {
-        message = 1;
-        res.json({ message });
-      })
-      .catch(err => {
-        res.json({ err });
-      });
+    bcrypt.hash(req.body.password, 3, function(err, hash) {
+      db.any('INSERT INTO employees(emp_id, fullname, doj, password, image) VALUES(DEFAULT, $1, $2, $3, $4)', [req.body.fullName, req.body.doj, hash, req.body.image])
+        .then(data => {
+          message = 1;
+          res.json({ message });
+        })
+        .catch(err => {
+          res.json({ err });
+        });
+    });
   } else {
-    db.any('INSERT INTO employees(emp_id, fullname, doj, password, image) VALUES($1, $2, $3, $4, $5)', [req.body.empId, req.body.fullName, req.body.doj, req.body.password, req.body.image])
-      .then(data => {
-        message = 1;
-        res.json({ message });
-      })
-      .catch(err => {
-        res.json({ err });
-      });
+    bcrypt.hash(req.body.password, 3, function(err, hash) {
+      db.any('INSERT INTO employees(emp_id, fullname, doj, password, image) VALUES($1, $2, $3, $4, $5)', [req.body.empId, req.body.fullName, req.body.doj, hash, req.body.image])
+        .then(data => {
+          message = 1;
+          res.json({ message });
+        })
+        .catch(err => {
+          console.log(err);
+          res.json({ err });
+        });
+    });
   }
 });
 
