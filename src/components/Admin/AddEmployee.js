@@ -26,12 +26,10 @@ export default class AddEmployee extends Component {
   }
 
   handleDate = ( date ) => {
-    console.log(typeof date);
     this.setState({ doj: date });
   }
 
   handleSubmit = () => {
-    console.log(this.state.fullName, this.state.empId, this.state.doj, this.state.password);
     var dateString = this.state.doj.split('/');
     var date = new Date(dateString[2], dateString[1]-1, dateString[0]);
     axios

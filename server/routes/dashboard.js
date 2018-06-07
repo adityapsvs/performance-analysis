@@ -28,7 +28,6 @@ router.get('/employee', (req, res) => {
 router.get('/message', (req, res) => {
   db.one('SELECT message FROM generallookup', [])
     .then(message => {
-      console.log(message);
       res.json({ message });
     })
     .catch(err => {

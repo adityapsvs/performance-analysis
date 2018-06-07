@@ -4,6 +4,16 @@ const bcrypt = require('bcrypt');
 
 const db = require('../db');
 
+router.get('/employees', (req, res) => {
+  db.any('SELECT emp_id, fullName FROM employees')
+    .then(employees => {
+      res.json({ employees });
+    })
+    .catch(err => {
+      res.json({ err })
+    })
+});
+
 router.post('/add-employee', (req, res) => {
   var message;
   if(req.body.empId == '') {
@@ -90,7 +100,7 @@ router.post('/add-dates', (req, res) => {
   }
 });
 
-router.get('/employees', (req, res) => {
+router.get('/holiday', (req, res) => {
   db.any('SELECT holidaydate FROM holidays')
     .then(dates => {
       var enable;
@@ -171,7 +181,6 @@ router.post('/bad-reason', (req, res) => {
 router.post('/change-entry', (req, res) => {
   db.any('UPDATE attendance SET instatus_id=$1 WHERE emp_id=$2 AND date=current_date', [req.body.instatus, req.body.empId])
     .then(data => {
-      console.log(data);
       res.json({ data });
     })
     .catch(err => {

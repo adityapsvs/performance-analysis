@@ -10,7 +10,6 @@ const flash = require('express-flash');
 const passport = require('passport');
 
 const index = require('./routes/index');
-const users = require('./routes/users');
 const dashboard = require('./routes/dashboard');
 const master = require('./routes/master');
 
@@ -42,7 +41,6 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use('/', index);
-app.use('/users', users);
 app.use('/dashboard', dashboard);
 app.use('/master', master);
 

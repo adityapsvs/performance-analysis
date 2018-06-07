@@ -1,18 +1,28 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router";
-import { Button, Container, Divider, Grid, Icon, Image, Menu, Sidebar, Responsive } from "semantic-ui-react";
+import { Button, Container, Divider, Grid, Icon, Image, Menu, Sidebar, Table, Responsive } from "semantic-ui-react";
 import AddEmployee from './AddEmployee';
 import ChangeAttendance from './ChangeAttendance';
 import Settings from './Settings';
 import RatePerformance from './RatePerformance';
+import axios from 'axios';
 
 export default class Admin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      component: 'addEmployee',
-      logout: false
+      component: '',
+      logout: false,
+      employees: []
     };
+  }
+
+  componentDidMount() {
+    axios
+      .get('/master/employees')
+      .then(res => {
+        this.setState({ employees: res.data.employees });
+      });
   }
 
   renderComponent(name) {
@@ -30,7 +40,7 @@ export default class Admin extends Component {
         return <RatePerformance />;
         break;
       default:
-        return <AddEmployee />;
+        return null;
     }
   }
 
@@ -43,7 +53,8 @@ export default class Admin extends Component {
   }
 
   render() {
-    var AdminComponent = this.renderComponent(this.state.component);
+    var employees = this.state.employees;
+    var AdminComponent = this.renderComponent(this.state.component, this.state.employees);
     if(this.state.logout || this.props.location.state === undefined) {
       return <Redirect to={{ pathname: '/' }} />;
     } else {
@@ -75,6 +86,27 @@ export default class Admin extends Component {
               </Grid.Column>
               <Grid.Column>
                 <Button onClick={this.changeComponent} name='ratePerformance' size='medium' inverted fluid color='orange'>Rate performance</Button>
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+
+            </Grid.Row>
+            <Grid.Row centered>
+              <Grid.Column mobile={10} tablet={8} computer={2}>
+                <Table singleLine>
+                  <Table.Body>
+                    {
+                      employees.map((employee, index) => {
+                        return (
+                          <Table.Row key={index}>
+                            <Table.Cell>{ employee.emp_id }</Table.Cell>
+                            <Table.Cell>{ employee.fullname }</Table.Cell>
+                          </Table.Row>
+                        );
+                      })
+                    }
+                  </Table.Body>
+                </Table>
               </Grid.Column>
             </Grid.Row>
             <Grid.Row>

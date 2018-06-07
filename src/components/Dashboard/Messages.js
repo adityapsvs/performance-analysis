@@ -15,7 +15,6 @@ export default class Messages extends Component {
     axios
       .get('/dashboard/message')
       .then(res => {
-        console.log(res);
         this.setState({ message: res.data.message.message });
       });
   }

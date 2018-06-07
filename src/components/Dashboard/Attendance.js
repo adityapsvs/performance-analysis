@@ -15,7 +15,6 @@ export default class Attendance extends Component {
   componentDidMount() {
     axios.get('/dashboard/attendance', { params: { empId: this.props.empId } })
       .then(res => {
-        console.log(res);
         this.setState({ enableEntry: res.data.enableEntry, enableExit: res.data.enableExit });
       });
   }
