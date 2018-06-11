@@ -8,16 +8,11 @@ export default class ChangeAttendance extends Component {
     super(props);
     this.state = {
       empId: '',
-      instatus: '',
-      outstatus: '',
-      openFailModal: false
+      instatus: 1,
+      outstatus: 1,
+      openFailModal: false,
+      employees: this.props.employees
     }
-  }
-
-  handleChange = ( event, { name } ) => {
-    this.setState({
-      [name]: event.target.value
-    });
   }
 
   changeEntry = () => {
@@ -27,7 +22,7 @@ export default class ChangeAttendance extends Component {
       .then(res => {
         if(res.data.data !== undefined) { this.setState({ empId: '', instatus: '' }) }
         else if(res.data.err) { this.setState({ openFailModal: true, empId: '', instatus: '' }); }
-      })
+      });
   }
 
   changeExit = () => {
@@ -37,12 +32,19 @@ export default class ChangeAttendance extends Component {
       .then(res => {
         if(res.data.data !== undefined) { this.setState({ empId: '', outstatus: '' }) }
         else if(res.data.err) { this.setState({ openFailModal: true, empId: '', outstatus: '' }); }
-      })
+      });
   }
+
+  handleEmpId = (event) => { this.setState({ empId: event.target.value }); }
+
+  handleOutStatus = (event) => { this.setState({ outstatus: event.target.value }); }
+
+  handleInStatus = (event) => { this.setState({ instatus: event.target.value }); }
 
   openFailModal = () => { this.setState({ openFailModal: false }); }
 
   render() {
+    var employees = this.state.employees;
     return(
       <Container fluid>
         <Grid column={16}>
@@ -52,8 +54,26 @@ export default class ChangeAttendance extends Component {
           <Grid.Row centered>
             <Grid.Column mobile={6} computer={6} tablet={6}>
               <Form inverted onSubmit={this.changeEntry}>
-                <Form.Input name='empId' value={this.state.empId} onChange={this.handleChange} fluid placeholder='Enter an Employee ID' />
-                <Form.Input name='instatus' value={this.state.instatus} onChange={this.handleChange} fluid placeholder='Enter 1 - punctual, 2 - late, 3 - half day' />
+                <Form.Field name='empId' onChange={this.handleEmpId} control='select'>
+                  {
+                    employees.map((employee, index) => {
+                      var value = employee.emp_id+' - '+employee.fullname;
+                      return (
+                        <option value={employee.emp_id} key={index}>{value}</option>
+                      );
+                    })
+                  }
+                </Form.Field>
+                <Form.Field name='instatus' onChange={this.handleInStatus} control='select'>
+                  {
+                    ['punctual', 'Late', 'Half'].map((status, index) => {
+                      var value = (index+1)+' - '+status;
+                      return (
+                        <option value={index+1} key={index}>{value}</option>
+                      );
+                    })
+                  }
+                </Form.Field>
                 <Divider horizontal hidden />
                 <Button type='submit' floated='right' inverted fluid color='blue'>Add</Button>
               </Form>
@@ -65,8 +85,26 @@ export default class ChangeAttendance extends Component {
           <Grid.Row centered>
             <Grid.Column mobile={6} computer={6} tablet={6}>
               <Form inverted onSubmit={this.changeExit}>
-                <Form.Input name='empId' value={this.state.empId} onChange={this.handleChange} fluid placeholder='Enter an Employee ID' />
-                <Form.Input name='outstatus' value={this.state.outstatus} onChange={this.handleChange} fluid placeholder='Enter 3 - overtime, 2 - early, 1 - half day' />
+                <Form.Field name='empId' onChange={this.handleEmpId} placeholder='Select an employee' control='select'>
+                  {
+                    employees.map((employee, index) => {
+                      var value = employee.emp_id+': '+employee.fullname;
+                      return (
+                        <option value={employee.emp_id} key={index}>{value}</option>
+                      );
+                    })
+                  }
+                </Form.Field>
+                <Form.Field name='outstatus' onChange={this.handleOutStatus} control='select'>
+                  {
+                    ['Half', 'Early', 'overtime'].map((status, index) => {
+                      var value = (index+1)+' - '+status;
+                      return (
+                        <option value={index+1} key={index}>{value}</option>
+                      );
+                    })
+                  }
+                </Form.Field>
                 <Divider horizontal hidden />
                 <Button type='submit' floated='right' inverted fluid color='blue'>Add</Button>
               </Form>

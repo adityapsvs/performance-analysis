@@ -17,7 +17,8 @@ export default class Settings extends Component {
       message: '',
       dates: [],
       successMsg: false,
-      openFailModal: false
+      openFailModal: false,
+      employees: this.props.employees
     }
   }
 
@@ -89,7 +90,10 @@ export default class Settings extends Component {
 
   openFailModal = () => { this.setState({ openFailModal: false }); }
 
+  handleEmpId = (event) => { this.setState({ employeeOfTheMonth: event.target.value }); }
+
   render() {
+    var employees = this.state.employees;
     return(
       <Container fluid>
         <Grid centered columns={16}>
@@ -103,7 +107,16 @@ export default class Settings extends Component {
           <Grid.Row centered>
             <Grid.Column mobile={6} computer={6} tablet={6}>
               <Form inverted onSubmit={this.submitEmployee}>
-                <Form.Input name='employeeOfTheMonth' value={this.state.employeeOfTheMonth} onChange={this.handleChange} fluid placeholder='Enter an Employee ID' />
+                <Form.Field name='employeeOfTheMonth' onChange={this.handleEmpId} control='select'>
+                  {
+                    employees.map((employee, index) => {
+                      var value = employee.emp_id+' - '+employee.fullname;
+                      return (
+                        <option value={employee.emp_id} key={index}>{value}</option>
+                      );
+                    })
+                  }
+                </Form.Field>
                 <Divider horizontal hidden />
                 <Button type='submit' floated='right' inverted fluid color='red'>Add</Button>
               </Form>

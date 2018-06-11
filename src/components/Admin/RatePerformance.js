@@ -10,12 +10,13 @@ export default class RatePerformace extends Component {
       employees: this.props.employees,
       loader: true,
       empId: '',
-      effort: '',
-      seriousness: '',
-      efficiency: '',
-      timeWastage: '',
+      effort: 1,
+      seriousness: 1,
+      efficiency: 1,
+      timeWastage: 1,
       enable: true,
-      openFailModal: false
+      openFailModal: false,
+      employees: this.props.employees
     }
   }
 
@@ -28,12 +29,6 @@ export default class RatePerformace extends Component {
       .catch(err => {
         console.log(err);
       });
-  }
-
-  handleChange = ( event, { name } ) => {
-    this.setState({
-      [name]: event.target.value
-    });
   }
 
   submitPerformance = () => {
@@ -72,13 +67,30 @@ export default class RatePerformace extends Component {
 
   openFailModal = () => { this.setState({ openFailModal: false }); }
 
+  handleEmpId = (event) => { this.setState({ empId: event.target.value }); }
+
+  handleParameters = (event) => { this.setState({ [event.target.name]: event.target.value }); }
+
   render() {
+    var employees = this.state.employees;
+    var parameters = ['effort', 'seriousness', 'efficiency', 'timeWastage'];
     return(
       <Container fluid>
         <Grid columns={16}>
           <Grid.Row centered>
             <Grid.Column mobile={6} computer={6} tablet={6}>
-              <Input name='empId' value={this.state.empId} onChange={this.handleChange} inverted fluid placeholder='Employee ID'/>
+              <Form inverted>
+                <Form.Field name='empId' onChange={this.handleEmpId} control='select'>
+                  {
+                    employees.map((employee, index) => {
+                      var value = employee.emp_id+' - '+employee.fullname;
+                      return (
+                        <option value={employee.emp_id} key={index}>{value}</option>
+                      );
+                    })
+                  }
+                </Form.Field>
+              </Form>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row centered>
@@ -92,11 +104,36 @@ export default class RatePerformace extends Component {
           <Grid.Row centered>
             <Grid.Column mobile={6} computer={6} tablet={6}>
               <Form inverted onSubmit={this.submitPerformance}>
-                <Form.Input name='empId' value={this.state.empId} onChange={this.handleChange} fluid placeholder='Employee ID' />
-                <Form.Input name='effort' value={this.state.effort} onChange={this.handleChange} fluid placeholder='Efforts /10' />
-                <Form.Input name='seriousness' value={this.state.seriousness} onChange={this.handleChange} fluid placeholder='Seriousness /10' />
-                <Form.Input name='efficiency' value={this.state.efficiency} onChange={this.handleChange} fluid placeholder='Efficiency /10' />
-                <Form.Input name='timeWastage' value={this.state.timeWastage} onChange={this.handleChange} fluid placeholder='Time Wastage /10' />
+                <b>Employee ID:</b>
+                <Form.Field name='empId' onChange={this.handleEmpId} control='select'>
+                  {
+                    employees.map((employee, index) => {
+                      var value = employee.emp_id+' - '+employee.fullname;
+                      return (
+                        <option value={employee.emp_id} key={index}>{value}</option>
+                      );
+                    })
+                  }
+                </Form.Field>
+                {
+                  parameters.map((parameter, index) => {
+                    return(
+                      <div key={index}>
+                        <b>{parameter}:</b>
+                        <Form.Field name={parameter} onChange={this.handleParameters} control='select' key={index}>
+                          {
+                            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value, index) => {
+                              return (
+                                <option value={value} key={index}>{value}</option>
+                              );
+                            })
+                          }
+                        </Form.Field>
+                        <Divider horizontal hidden />
+                      </div>
+                    );
+                  })
+                }
                 <Divider horizontal hidden />
                 <Button disabled={!(this.state.enable)} type='submit' floated='right' inverted fluid color='orange'>Add</Button>
               </Form>

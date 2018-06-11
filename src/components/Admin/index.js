@@ -25,19 +25,19 @@ export default class Admin extends Component {
       });
   }
 
-  renderComponent(name) {
+  renderComponent(name, employees) {
     switch(name) {
       case 'addEmployee':
-        return <AddEmployee />;
+        return <AddEmployee employees={employees}/>;
         break;
       case 'generalSettings':
-        return <Settings />;
+        return <Settings employees={employees}/>;
         break;
       case 'changeAttendance':
-        return <ChangeAttendance />;
+        return <ChangeAttendance employees={employees}/>;
         break;
       case 'ratePerformance':
-        return <RatePerformance />;
+        return <RatePerformance employees={employees}/>;
         break;
       default:
         return null;
@@ -54,7 +54,7 @@ export default class Admin extends Component {
 
   render() {
     var employees = this.state.employees;
-    var AdminComponent = this.renderComponent(this.state.component, this.state.employees);
+    var AdminComponent = this.renderComponent(this.state.component, employees);
     if(this.state.logout || this.props.location.state === undefined) {
       return <Redirect to={{ pathname: '/' }} />;
     } else {
@@ -87,9 +87,6 @@ export default class Admin extends Component {
               <Grid.Column>
                 <Button onClick={this.changeComponent} name='ratePerformance' size='medium' inverted fluid color='orange'>Rate performance</Button>
               </Grid.Column>
-            </Grid.Row>
-            <Grid.Row>
-
             </Grid.Row>
             <Grid.Row centered>
               <Grid.Column mobile={10} tablet={8} computer={2}>
