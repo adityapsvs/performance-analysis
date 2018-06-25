@@ -5,6 +5,7 @@ import AddEmployee from './AddEmployee';
 import ChangeAttendance from './ChangeAttendance';
 import Settings from './Settings';
 import RatePerformance from './RatePerformance';
+import Analysis from './Analysis';
 import axios from 'axios';
 
 export default class Admin extends Component {
@@ -39,6 +40,9 @@ export default class Admin extends Component {
       case 'ratePerformance':
         return <RatePerformance employees={employees}/>;
         break;
+      case 'analysis':
+        return <Analysis employees={employees}/>;
+        break;
       default:
         return null;
     }
@@ -72,7 +76,7 @@ export default class Admin extends Component {
             </Grid.Row>
           </Grid>
           <Divider horizontal hidden />
-          <Grid columns={4}>
+          <Grid columns={5}>
             <Divider horizontal hidden />
             <Grid.Row>
               <Grid.Column>
@@ -86,6 +90,9 @@ export default class Admin extends Component {
               </Grid.Column>
               <Grid.Column>
                 <Button onClick={this.changeComponent} name='ratePerformance' size='medium' inverted fluid color='orange'>Rate performance</Button>
+              </Grid.Column>
+              <Grid.Column>
+                <Button onClick={this.changeComponent} name='analysis' size='medium' inverted fluid color='purple'>Performance Analysis</Button>
               </Grid.Column>
             </Grid.Row>
             <Grid.Row centered>

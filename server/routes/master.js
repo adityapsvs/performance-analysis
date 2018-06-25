@@ -11,7 +11,7 @@ router.get('/employees', (req, res) => {
     })
     .catch(err => {
       res.json({ err })
-    })
+    });
 });
 
 router.post('/add-employee', (req, res) => {
@@ -120,16 +120,19 @@ router.post('/performance', (req, res) => {
   db.any('SELECT instatus_id, outstatus_id FROM attendance WHERE emp_id=$1 AND DATE=current_date', [req.body.empId])
     .then(data => {
       var instatus_id = data[0].instatus_id, outstatus_id = data[0].outstatus_id;
-      var entryPts, exitPts;
+      var entryPts, entryStatus, exitPts, exitStatus;
       switch(instatus_id) {
         case 1:
           entryPts = 5;
+          entryStatus = "Punctual";
           break;
         case 2:
           entryPts = 2;
+          entryStatus = "Late";
           break;
         case 3:
           entryPts = 1;
+          entryStatus = "Half-day";
           break;
         default:
           break;
@@ -137,18 +140,21 @@ router.post('/performance', (req, res) => {
       switch (outstatus_id) {
         case 1:
           exitPts = 1;
+          exitStatus = "Half-day";
           break;
         case 2:
           exitPts = 2;
+          exitStatus = "Early";
           break;
         case 3:
           exitPts = 5;
+          exitStatus = "Punctual";
           break;
         default:
           break;
       }
       var punctuality = entryPts+exitPts;
-      db.any('INSERT INTO performance VALUES($1, current_date, $2, $3, $4, $5, 0, $6)', [req.body.empId, punctuality, req.body.effort, req.body.efficiency, req.body.seriousness, req.body.timeWastage])
+      db.any('INSERT INTO performance VALUES($1, current_date, $2, $3, $4, $5, 0, $6, $7, $8)', [req.body.empId, punctuality, req.body.effort, req.body.efficiency, req.body.seriousness, req.body.timeWastage, entryStatus, exitStatus])
       .then(data => {
         res.json({ data });
       })
@@ -159,7 +165,7 @@ router.post('/performance', (req, res) => {
 });
 
 router.post('/good-reason', (req, res) => {
-  db.any('INSERT INTO performance VALUES($1, current_date, 6.75, 6.75, 6.75, 6.75, 1, 6.75)', [req.body.empId])
+  db.any('INSERT INTO performance VALUES($1, current_date, 6.75, 6.75, 6.75, 6.75, 1, 6.75, $2, $3)', [req.body.empId, "Accepted Leave", "Accepted Leave"])
     .then(data => {
       res.json({ data });
     })
@@ -169,7 +175,7 @@ router.post('/good-reason', (req, res) => {
 });
 
 router.post('/bad-reason', (req, res) => {
-  db.any('INSERT INTO performance VALUES($1, current_date, 6.5, 6.5, 6.5, 6.5, -1, 6.5)', [req.body.empId])
+  db.any('INSERT INTO performance VALUES($1, current_date, 6.5, 6.5, 6.5, 6.5, -1, 6.5, $2, $3)', [req.body.empId, "Declined Leave", "Declined Leave"])
     .then(data => {
       res.json({ data });
     })
@@ -193,6 +199,16 @@ router.post('/change-exit', (req, res) => {
   db.any('UPDATE attendance SET outstatus_id=$1 WHERE emp_id=$2 AND date=current_date', [req.body.outstatus, req.body.empId])
     .then(data => {
       res.json({ data });
+    })
+    .catch(err => {
+      res.json({ err })
+    });
+});
+
+router.get('/analysis', (req, res) => {
+  db.any('SELECT date, punctuality, effort, efficiency, seriousness, timewastage, reasonforleave, instatus, outstatus FROM performance WHERE emp_id=$1', [req.query.empId])
+    .then(analysis => {
+      res.json({ analysis });
     })
     .catch(err => {
       res.json({ err })
